@@ -9,8 +9,7 @@ Wiki付费, 99元永久, 如欲购买请添加作者QQ: 2468629609
 ## Changes
 
 由 Steve29794 新增以下功能
-1. 1.21-1.21.1 (NMS 1.21.R1) Components 组件支持
-2. 新增 **当玩家受伤时** 触发事件
+1. 新增 **当玩家受伤时** 触发事件
 ```
 damaged_hand -> 主手
 damaged_offhand -> 副手
@@ -19,7 +18,7 @@ damaged_chest -> 胸甲
 damaged_legs -> 护腿
 damaged_feet -> 靴子
 ```
-3. 修复移除药水效果 BUG
+2. 修复移除药水效果 BUG
 ```
 ......
 [-]    if (type != null) return;
@@ -27,7 +26,7 @@ damaged_feet -> 靴子
        player.removePotionEffect(type);
 ......
 ```
-4. 新增在 EntityDamageByEntity 事件中给予对方药水效果 动作
+3. 新增在 EntityDamageByEntity 事件中给予对方药水效果 动作
 ```
 to-target-set-potion-effect
 to-target-remove-potion-effect

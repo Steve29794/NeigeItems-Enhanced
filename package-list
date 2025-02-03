@@ -1,0 +1,123 @@
+$dokka.format:javadoc-v1
+$dokka.linkExtension:html
+$dokka.location:pers.neige.neigeitems.annotation/Awake.LifeCycle///PointingToDeclaration/pers/neige/neigeitems/annotation/Awake.LifeCycle.html
+$dokka.location:pers.neige.neigeitems.event/ItemUpdateEvent.PostGenerate///PointingToDeclaration/pers/neige/neigeitems/event/ItemUpdateEvent.PostGenerate.html
+$dokka.location:pers.neige.neigeitems.event/ItemUpdateEvent.PreGenerate///PointingToDeclaration/pers/neige/neigeitems/event/ItemUpdateEvent.PreGenerate.html
+$dokka.location:pers.neige.neigeitems.event/MythicDropEvent.ConfigLoaded///PointingToDeclaration/pers/neige/neigeitems/event/MythicDropEvent.ConfigLoaded.html
+$dokka.location:pers.neige.neigeitems.event/MythicDropEvent.Drop///PointingToDeclaration/pers/neige/neigeitems/event/MythicDropEvent.Drop.html
+$dokka.location:pers.neige.neigeitems.event/PluginReloadEvent.Post///PointingToDeclaration/pers/neige/neigeitems/event/PluginReloadEvent.Post.html
+$dokka.location:pers.neige.neigeitems.event/PluginReloadEvent.Pre///PointingToDeclaration/pers/neige/neigeitems/event/PluginReloadEvent.Pre.html
+$dokka.location:pers.neige.neigeitems.event/PluginReloadEvent.Type///PointingToDeclaration/pers/neige/neigeitems/event/PluginReloadEvent.Type.html
+$dokka.location:pers.neige.neigeitems.item/ItemDurability.DamageResult///PointingToDeclaration/pers/neige/neigeitems/item/ItemDurability.DamageResult.html
+$dokka.location:pers.neige.neigeitems.item/ItemPack.ItemInfo///PointingToDeclaration/pers/neige/neigeitems/item/ItemPack.ItemInfo.html
+$dokka.location:pers.neige.neigeitems.item/ItemPlaceholder.ParseResult///PointingToDeclaration/pers/neige/neigeitems/item/ItemPlaceholder.ParseResult.html
+$dokka.location:pers.neige.neigeitems.lang/LocaleI18n.TranslationProvider///PointingToDeclaration/pers/neige/neigeitems/lang/LocaleI18n.TranslationProvider.html
+$dokka.location:pers.neige.neigeitems.ref.network/RefPacketPlayInFlying.Pos///PointingToDeclaration/pers/neige/neigeitems/ref/network/RefPacketPlayInFlying.Pos.html
+$dokka.location:pers.neige.neigeitems.ref.network/RefPacketPlayInFlying.PosRot///PointingToDeclaration/pers/neige/neigeitems/ref/network/RefPacketPlayInFlying.PosRot.html
+$dokka.location:pers.neige.neigeitems.ref.network/RefPacketPlayInFlying.Rot///PointingToDeclaration/pers/neige/neigeitems/ref/network/RefPacketPlayInFlying.Rot.html
+$dokka.location:pers.neige.neigeitems.ref.network/RefPacketPlayOutEntity.RefPacketPlayOutEntityLook///PointingToDeclaration/pers/neige/neigeitems/ref/network/RefPacketPlayOutEntity.RefPacketPlayOutEntityLook.html
+$dokka.location:pers.neige.neigeitems.ref.network/RefPacketPlayOutEntity.RefPacketPlayOutRelEntityMove///PointingToDeclaration/pers/neige/neigeitems/ref/network/RefPacketPlayOutEntity.RefPacketPlayOutRelEntityMove.html
+$dokka.location:pers.neige.neigeitems.ref.network/RefPacketPlayOutEntity.RefPacketPlayOutRelEntityMoveLook///PointingToDeclaration/pers/neige/neigeitems/ref/network/RefPacketPlayOutEntity.RefPacketPlayOutRelEntityMoveLook.html
+$dokka.location:pers.neige.neigeitems.scanner/ClassScanner.CallSite.Companion///PointingToDeclaration/pers/neige/neigeitems/scanner/ClassScanner.CallSite.Companion.html
+$dokka.location:pers.neige.neigeitems.scanner/ClassScanner.CallSite///PointingToDeclaration/pers/neige/neigeitems/scanner/ClassScanner.CallSite.html
+$dokka.location:pers.neige.neigeitems.scanner/ClassScanner.PackedMethod///PointingToDeclaration/pers/neige/neigeitems/scanner/ClassScanner.PackedMethod.html
+$dokka.location:pers.neige.neigeitems.scanner/ClassScanner.StaticCallSite///PointingToDeclaration/pers/neige/neigeitems/scanner/ClassScanner.StaticCallSite.html
+$dokka.location:pers.neige.neigeitems.utils/SamplingUtils.SamplingResult///PointingToDeclaration/pers/neige/neigeitems/utils/SamplingUtils.SamplingResult.html
+pers.neige.neigeitems
+pers.neige.neigeitems.action
+pers.neige.neigeitems.action.catcher
+pers.neige.neigeitems.action.container
+pers.neige.neigeitems.action.handler
+pers.neige.neigeitems.action.impl
+pers.neige.neigeitems.action.result
+pers.neige.neigeitems.annotation
+pers.neige.neigeitems.calculate
+pers.neige.neigeitems.command
+pers.neige.neigeitems.command.arguments
+pers.neige.neigeitems.command.coordinates
+pers.neige.neigeitems.command.selector
+pers.neige.neigeitems.command.subcommand
+pers.neige.neigeitems.command.subcommand.expansion
+pers.neige.neigeitems.command.subcommand.mm
+pers.neige.neigeitems.event
+pers.neige.neigeitems.hook.itemsadder
+pers.neige.neigeitems.hook.itemsadder.impl
+pers.neige.neigeitems.hook.magicgem
+pers.neige.neigeitems.hook.magicgem.impl
+pers.neige.neigeitems.hook.mythicmobs
+pers.neige.neigeitems.hook.nashorn
+pers.neige.neigeitems.hook.nashorn.impl
+pers.neige.neigeitems.hook.nms
+pers.neige.neigeitems.hook.oraxen
+pers.neige.neigeitems.hook.oraxen.impl
+pers.neige.neigeitems.hook.placeholderapi
+pers.neige.neigeitems.hook.placeholderapi.impl
+pers.neige.neigeitems.hook.vault
+pers.neige.neigeitems.hook.vault.impl
+pers.neige.neigeitems.item
+pers.neige.neigeitems.item.action
+pers.neige.neigeitems.item.builder
+pers.neige.neigeitems.lang
+pers.neige.neigeitems.libs.asahi.util.calculate
+pers.neige.neigeitems.libs.bot.inker.bukkit.nbt
+pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.api
+pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.internal.annotation
+pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.internal.invoke
+pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.internal.loader
+pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.neigeitems
+pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.neigeitems.animation
+pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.neigeitems.enchantment
+pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.neigeitems.entity
+pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.neigeitems.level
+pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.neigeitems.spawner
+pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.neigeitems.utils
+pers.neige.neigeitems.listener
+pers.neige.neigeitems.manager
+pers.neige.neigeitems.manager.logger
+pers.neige.neigeitems.maven
+pers.neige.neigeitems.network
+pers.neige.neigeitems.papi
+pers.neige.neigeitems.ref
+pers.neige.neigeitems.ref.argument
+pers.neige.neigeitems.ref.block
+pers.neige.neigeitems.ref.block.sign
+pers.neige.neigeitems.ref.block.spawner
+pers.neige.neigeitems.ref.chat
+pers.neige.neigeitems.ref.core.component
+pers.neige.neigeitems.ref.damagesource
+pers.neige.neigeitems.ref.enchantment
+pers.neige.neigeitems.ref.entity
+pers.neige.neigeitems.ref.entity.ai.control
+pers.neige.neigeitems.ref.entity.ai.navigation
+pers.neige.neigeitems.ref.entity.animal
+pers.neige.neigeitems.ref.item
+pers.neige.neigeitems.ref.item.potion
+pers.neige.neigeitems.ref.item.shield
+pers.neige.neigeitems.ref.nbt
+pers.neige.neigeitems.ref.network
+pers.neige.neigeitems.ref.network.syncher
+pers.neige.neigeitems.ref.registry
+pers.neige.neigeitems.ref.scores
+pers.neige.neigeitems.ref.server
+pers.neige.neigeitems.ref.server.level
+pers.neige.neigeitems.ref.server.players
+pers.neige.neigeitems.ref.sounds
+pers.neige.neigeitems.ref.tags
+pers.neige.neigeitems.ref.util
+pers.neige.neigeitems.ref.world
+pers.neige.neigeitems.ref.world.inventory
+pers.neige.neigeitems.ref.world.item.component
+pers.neige.neigeitems.ref.world.level
+pers.neige.neigeitems.ref.world.level.chunk.storage
+pers.neige.neigeitems.scanner
+pers.neige.neigeitems.script
+pers.neige.neigeitems.script.tool
+pers.neige.neigeitems.section
+pers.neige.neigeitems.section.impl
+pers.neige.neigeitems.task
+pers.neige.neigeitems.text
+pers.neige.neigeitems.text.impl
+pers.neige.neigeitems.user
+pers.neige.neigeitems.utils
+pers.neige.neigeitems.utils.function
+

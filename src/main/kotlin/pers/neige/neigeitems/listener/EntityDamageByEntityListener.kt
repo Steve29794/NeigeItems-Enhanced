@@ -103,4 +103,29 @@ object EntityDamageByEntityListener {
         // 执行物品动作
         ActionManager.killListener(player, itemStack, itemInfo, event, key)
     }
+
+    @JvmStatic
+    @Listener(eventPriority = EventPriority.LOWEST)
+    private fun damaged(event: EntityDamageByEntityEvent) {
+        if (event.cause != EntityDamageEvent.DamageCause.ENTITY_ATTACK || event.entity !is Player) return
+        val player = event.entity as Player;
+        // 获取背包
+        val inventory = player.inventory;
+        damagedAction(player, inventory.itemInMainHand, event, ItemActionType.DAMAGED_HAND.type)
+        damagedAction(player, inventory.itemInOffHand, event, ItemActionType.DAMAGED_OFFHAND.type)
+        inventory.helmet?.let { damagedAction(player, it, event, ItemActionType.DAMAGED_HEAD.type) }
+        inventory.chestplate?.let { damagedAction(player, it, event, ItemActionType.DAMAGED_CHEST.type) }
+        inventory.leggings?.let { damagedAction(player, it, event, ItemActionType.DAMAGED_LEGS.type) }
+        inventory.boots?.let { damagedAction(player, it, event, ItemActionType.DAMAGED_FEET.type) }
+    }
+
+    private fun damagedAction(
+        player: Player,
+        item: ItemStack,
+        event: EntityDamageByEntityEvent,
+        key: String
+    ) {
+        val itemInfo = item.isNiItem() ?: return
+        ActionManager.damagedListener(player, item, itemInfo, event, key)
+    }
 }

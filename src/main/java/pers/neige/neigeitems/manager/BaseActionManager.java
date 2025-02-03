@@ -1165,25 +1165,35 @@ public abstract class BaseActionManager {
         addConsumer(Arrays.asList("to-target-set-potion", "to-target-setPotion","to-target-set-potion-effect", "to-target-setPotionEffect"), false, (context, content) -> {
             if (!(context.getEvent() instanceof EntityDamageByEntityEvent)) return;
             EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) context.getEvent();
-            if (event == null || !(event.getEntity() instanceof LivingEntity)) return;
-            LivingEntity entity = (LivingEntity) event.getEntity();
+            if (event == null) return;
+            Entity entity = event.getEntity();
+            Entity damager = event.getDamager();
             String[] args = content.split(" ", 3);
             if (args.length < 3) return;
             PotionEffectType type = PotionEffectType.getByName(args[0].toUpperCase());
             Integer amplifier = StringUtils.toIntOrNull(args[1]);
             Integer duration = StringUtils.toIntOrNull(args[2]);
             if (type == null || duration == null || amplifier == null) return;
-            entity.addPotionEffect(new PotionEffect(type, duration * 20, amplifier - 1), true);
+            if (entity instanceof Player && damager instanceof LivingEntity) { // 受害者是玩家，应该向凶手加BUFF
+                ((LivingEntity) damager).addPotionEffect(new PotionEffect(type, duration * 20, amplifier - 1), true);
+            } else if (entity instanceof LivingEntity) {
+                ((LivingEntity) entity).addPotionEffect(new PotionEffect(type, duration * 20, amplifier - 1), true);
+            }
         });
         // 给对方移除药水效果
         addConsumer(Arrays.asList("to-target-remove-potion", "to-target-removePotion", "to-target-remove-potion-effect", "to-target-removePotionEffect"), false, (context, content) -> {
             if (!(context.getEvent() instanceof EntityDamageByEntityEvent)) return;
             EntityDamageByEntityEvent event = (EntityDamageByEntityEvent) context.getEvent();
-            if (event == null || !(event.getEntity() instanceof LivingEntity)) return;
-            LivingEntity entity = (LivingEntity) event.getEntity();
+            if (event == null) return;
+            Entity entity = event.getEntity();
+            Entity damager = event.getDamager();
             PotionEffectType type = PotionEffectType.getByName(content.toUpperCase(Locale.ROOT));
             if (type != null) return;
-            entity.removePotionEffect(type);
+            if (entity instanceof Player && damager instanceof LivingEntity) { // 受害者是玩家，应该向凶手加BUFF
+                ((LivingEntity) damager).removePotionEffect(type);
+            } else if (entity instanceof LivingEntity) {
+                ((LivingEntity) entity).removePotionEffect(type);
+            }
         });
         // 延迟(单位是tick)
         addFunction("delay", (context, content) -> {

@@ -448,7 +448,7 @@ object ActionManager : BaseActionManager(NeigeItems.getInstance()) {
         player: Player, itemStack: ItemStack, itemInfo: ItemInfo, event: EntityDamageByEntityEvent, key: String
     ) {
         basicHandler(
-            player, itemStack, itemInfo, event, key, cancel = false, cancelIfCooldown = true
+            player, itemStack, itemInfo, event, key, cancel = false
         )
     }
 

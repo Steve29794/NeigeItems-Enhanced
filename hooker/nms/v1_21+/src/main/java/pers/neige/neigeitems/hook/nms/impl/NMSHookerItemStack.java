@@ -1,7 +1,11 @@
 package pers.neige.neigeitems.hook.nms.impl;
 
+import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.component.TypedDataComponent;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.component.ItemLore;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -10,13 +14,18 @@ import org.bukkit.craftbukkit.util.CraftChatMessage;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pers.neige.neigeitems.NeigeItems;
 import pers.neige.neigeitems.hook.nms.NMSHooker;
 import pers.neige.neigeitems.item.ItemPlaceholder;
 import pers.neige.neigeitems.item.builder.ItemBuilder;
 import pers.neige.neigeitems.item.builder.NewItemBuilder;
+import pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.NbtCompound;
+import pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.neigeitems.utils.ComponentUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.BiFunction;
 
 /**
@@ -32,25 +41,19 @@ public class NMSHookerItemStack extends NMSHooker {
 
     @Override
     @NotNull
-    public ItemBuilder newItemBuilder(
-            @Nullable Material material
-    ) {
+    public ItemBuilder newItemBuilder(@Nullable Material material) {
         return new NewItemBuilder(material);
     }
 
     @Override
     @NotNull
-    public ItemBuilder newItemBuilder(
-            @Nullable ItemStack itemStack
-    ) {
+    public ItemBuilder newItemBuilder(@Nullable ItemStack itemStack) {
         return new NewItemBuilder(itemStack);
     }
 
     @Override
     @NotNull
-    public ItemBuilder newItemBuilder(
-            @Nullable ConfigurationSection config
-    ) {
+    public ItemBuilder newItemBuilder(@Nullable ConfigurationSection config) {
         return new NewItemBuilder(config);
     }
 
@@ -103,5 +106,21 @@ public class NMSHookerItemStack extends NMSHooker {
                 nmsItemStack.set(DataComponents.LORE, new ItemLore(lines, styledLines));
             }
         }
+    }
+
+    @Override
+    public NbtCompound getDisplayNbt(@NotNull ItemStack itemStack) {
+        net.minecraft.world.item.ItemStack nmsItemStack = CraftItemStack.asNMSCopy(itemStack);
+        CompoundTag compound = new CompoundTag();
+        for (Map.Entry<DataComponentType<?>, Optional<?>> entry : nmsItemStack.getComponentsPatch().entrySet()) {
+            TypedDataComponent<?> component = TypedDataComponent.createUnchecked(entry.getKey(), entry.getValue().get());
+            ResourceLocation key = (ResourceLocation) ComponentUtils.getKeyByType(component.type());
+            try {
+                compound.put(key.toString(), component.encodeValue(NewItemBuilder.registryOps).getOrThrow());
+            } catch (Throwable throwable) {
+                NeigeItems.getInstance().getLogger().warning(key + " 无法在 /ni itemnbt 指令中展示");
+            }
+        }
+        return NbtCompound.Unsafe.of(compound);
     }
 }

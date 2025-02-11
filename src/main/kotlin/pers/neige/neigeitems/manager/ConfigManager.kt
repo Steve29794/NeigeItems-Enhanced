@@ -77,8 +77,10 @@ object ConfigManager {
         }
         NeigeItems.getInstance().saveDefaultConfig()
         // 加载bstats
-        val metrics = Metrics(NeigeItems.getInstance(), 15750)
-        metrics.addCustomChart(SingleLineChart("items") { ItemManager.itemIds.size })
+        val metrics1 = Metrics(NeigeItems.getInstance(), 15750)
+        val metrics2 = Metrics(NeigeItems.getInstance(), 24744)
+        metrics1.addCustomChart(SingleLineChart("items") { ItemManager.itemIds.size })
+        metrics2.addCustomChart(SingleLineChart("items") { ItemManager.itemIds.size })
         // 加载配置
         reload()
     }

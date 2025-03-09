@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import pers.neige.neigeitems.config.ConfigReader;
 import pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.*;
 import pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.internal.annotation.CbVersion;
 import pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.neigeitems.utils.EnchantmentUtils;
@@ -91,7 +92,7 @@ public class ItemBuilder {
     }
 
     public ItemBuilder(
-            @Nullable ConfigurationSection config
+            @Nullable ConfigReader config
     ) {
         load(config);
     }
@@ -100,7 +101,14 @@ public class ItemBuilder {
             @Nullable ConfigurationSection config
     ) {
         if (config == null) return;
-        for (String key : config.getKeys(false)) {
+        load(ConfigReader.parse(config));
+    }
+
+    public void load(
+            @Nullable ConfigReader config
+    ) {
+        if (config == null) return;
+        for (String key : config.keySet()) {
             switch (key.toLowerCase()) {
                 case "type":
                 case "material": {
@@ -115,9 +123,9 @@ public class ItemBuilder {
                     break;
                 }
                 case "enchantments": {
-                    ConfigurationSection enchantSection = config.getConfigurationSection(key);
+                    ConfigReader enchantSection = config.getConfig(key);
                     if (enchantSection != null) {
-                        for (String enchantId : enchantSection.getKeys(false)) {
+                        for (String enchantId : enchantSection.keySet()) {
                             String uppercaseEnchantId = enchantId.toUpperCase();
                             short level = (short) enchantSection.getInt(enchantId);
                             Enchantment enchant = Enchantment.getByName(uppercaseEnchantId);
@@ -202,7 +210,7 @@ public class ItemBuilder {
                     break;
                 }
                 case "nbt": {
-                    ConfigurationSection nbtConfig = config.getConfigurationSection(key);
+                    ConfigReader nbtConfig = config.getConfig(key);
                     if (nbtConfig != null) {
                         this.coverNbt = ItemUtils.toNbtCompound(nbtConfig);
                     }

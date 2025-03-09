@@ -1,6 +1,7 @@
 package pers.neige.neigeitems.utils
 
 import org.bukkit.configuration.ConfigurationSection
+import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.plugin.Plugin
 import org.bukkit.plugin.java.JavaPlugin
@@ -10,7 +11,9 @@ import pers.neige.neigeitems.utils.FileUtils.createDirectory
 import pers.neige.neigeitems.utils.FileUtils.createFile
 import java.io.File
 import java.io.FileOutputStream
+import java.io.InputStreamReader
 import java.io.OutputStream
+import java.nio.charset.StandardCharsets
 
 
 /**
@@ -45,7 +48,7 @@ object ConfigUtils {
      */
     @JvmStatic
     fun getAllFiles(dir: String): ArrayList<File> {
-        return getAllFiles(File(NeigeItems.getInstance().dataFolder, File.separator + dir))
+        return getAllFiles(File(NeigeItems.getInstance().dataFolder, dir))
     }
 
     /**
@@ -56,7 +59,7 @@ object ConfigUtils {
      */
     @JvmStatic
     fun getFile(file: String): File {
-        return File(NeigeItems.getInstance().dataFolder, File.separator + file)
+        return File(NeigeItems.getInstance().dataFolder, file)
     }
 
     /**
@@ -67,7 +70,7 @@ object ConfigUtils {
      */
     @JvmStatic
     fun getFileOrNull(file: String): File? {
-        return File(NeigeItems.getInstance().dataFolder, File.separator + file).let {
+        return File(NeigeItems.getInstance().dataFolder, file).let {
             if (!it.exists()) null
             else it
         }
@@ -81,7 +84,7 @@ object ConfigUtils {
      */
     @JvmStatic
     fun getFileOrCreate(file: String): File {
-        return File(NeigeItems.getInstance().dataFolder, File.separator + file).createFile()
+        return File(NeigeItems.getInstance().dataFolder, file).createFile()
     }
 
     /**
@@ -93,7 +96,7 @@ object ConfigUtils {
      */
     @JvmStatic
     fun getFile(plugin: Plugin, file: String): File {
-        return File(plugin.dataFolder, File.separator + file)
+        return File(plugin.dataFolder, file)
     }
 
     /**
@@ -105,7 +108,7 @@ object ConfigUtils {
      */
     @JvmStatic
     fun getFileOrNull(plugin: Plugin, file: String): File? {
-        return File(plugin.dataFolder, File.separator + file).let {
+        return File(plugin.dataFolder, file).let {
             if (!it.exists()) null
             else it
         }
@@ -120,7 +123,7 @@ object ConfigUtils {
      */
     @JvmStatic
     fun getFileOrCreate(plugin: Plugin, file: String): File {
-        return File(plugin.dataFolder, File.separator + file).createFile()
+        return File(plugin.dataFolder, file).createFile()
     }
 
     /**
@@ -132,7 +135,7 @@ object ConfigUtils {
      */
     @JvmStatic
     fun getAllFiles(plugin: Plugin, dir: String): ArrayList<File> {
-        return getAllFiles(File(plugin.dataFolder, File.separator + dir))
+        return getAllFiles(File(plugin.dataFolder, dir))
     }
 
     /**
@@ -144,12 +147,7 @@ object ConfigUtils {
      */
     @JvmStatic
     fun getAllFiles(plugin: String, dir: String): ArrayList<File> {
-        return getAllFiles(
-            File(
-                File(NeigeItems.getInstance().dataFolder.parent, File.separator + plugin),
-                File.separator + dir
-            )
-        )
+        return getAllFiles(File(File(NeigeItems.getInstance().dataFolder.parent, plugin), dir))
     }
 
     /**
@@ -161,7 +159,7 @@ object ConfigUtils {
      */
     @JvmStatic
     fun getFile(plugin: String, file: String): File {
-        return File(File(NeigeItems.getInstance().dataFolder.parent, File.separator + plugin), File.separator + file)
+        return File(File(NeigeItems.getInstance().dataFolder.parent, plugin), file)
     }
 
     /**
@@ -173,10 +171,7 @@ object ConfigUtils {
      */
     @JvmStatic
     fun getFileOrNull(plugin: String, file: String): File? {
-        return File(
-            File(NeigeItems.getInstance().dataFolder.parent, File.separator + plugin),
-            File.separator + file
-        ).let {
+        return File(File(NeigeItems.getInstance().dataFolder.parent, plugin), file).let {
             if (!it.exists()) null
             else it
         }
@@ -191,10 +186,7 @@ object ConfigUtils {
      */
     @JvmStatic
     fun getFileOrCreate(plugin: String, file: String): File {
-        return File(
-            File(NeigeItems.getInstance().dataFolder.parent, File.separator + plugin),
-            File.separator + file
-        ).createFile()
+        return File(File(NeigeItems.getInstance().dataFolder.parent, plugin), file).createFile()
     }
 
     /**
@@ -506,6 +498,17 @@ object ConfigUtils {
 
     /**
      * String 转 ConfigurationSection
+     * @return 转换结果
+     */
+    @JvmStatic
+    fun String.loadFromString(): ConfigurationSection {
+        val result = YamlConfiguration()
+        result.loadFromString(this)
+        return result
+    }
+
+    /**
+     * String 转 ConfigurationSection
      * @param id 转换前使用的节点ID
      * @return 转换结果
      */
@@ -534,7 +537,7 @@ object ConfigUtils {
     @JvmStatic
     fun ConfigurationSection.coverWith(configSection: ConfigurationSection): ConfigurationSection {
         // 遍历所有键
-        configSection.getKeys(false).forEach { key ->
+        for (key in configSection.getKeys(false)) {
             // 用于覆盖的值
             val coverValue = configSection.get(key)
             // 原有值
@@ -542,9 +545,7 @@ object ConfigUtils {
             // 如果二者包含相同键
             if (value != null) {
                 // 如果二者均为ConfigurationSection
-                if (value is ConfigurationSection
-                    && coverValue is ConfigurationSection
-                ) {
+                if (value is ConfigurationSection && coverValue is ConfigurationSection) {
                     // 合并
                     this.set(key, value.coverWith(coverValue))
                 } else {
@@ -557,6 +558,69 @@ object ConfigUtils {
             }
         }
         return this
+    }
+
+    /**
+     * 用于补全config, 前者为当前config, 后者为默认config.
+     * 当默认config中的某个key不存在于当前config时, 将默认值补入当前config.
+     *
+     * @param config 当前config
+     * @param origin 默认config
+     * @return 是否存在补全行为
+     */
+    @JvmStatic
+    fun mergeIfAbsent(config: ConfigurationSection, origin: ConfigurationSection): Boolean {
+        var changed = false
+        for (key in origin.getKeys(true)) {
+            if (!config.contains(key)) {
+                config.set(key, origin.get(key))
+                changed = true
+            } else {
+                val completeValue = origin.get(key)
+                if (completeValue is ConfigurationSection && config.get(key) !is ConfigurationSection) {
+                    config.set(key, completeValue)
+                    changed = true
+                }
+            }
+        }
+        return changed
+    }
+
+    /**
+     * 用于生成或补全插件config.
+     * 当不存在config文件时, 将生成默认config文件.
+     * 当存在config文件且默认config中的某个key不存在于当前config时, 默认值将补入当前config.
+     */
+    @JvmStatic
+    fun JavaPlugin.loadConfig() {
+        this.loadConfig(true)
+    }
+
+    /**
+     * 用于生成或加载插件config.
+     * 当不存在config文件时, 将生成默认config文件.
+     * 当 fixConfig 为 true 时, 如果存在config文件且默认config中的某个key不存在于当前config, 默认值将补入当前config.
+     * 当 fixConfig 为 false 时, 将直接加载config.
+     *
+     * @param fixConfig 是否根据默认config进行补全
+     */
+    @JvmStatic
+    fun JavaPlugin.loadConfig(fixConfig: Boolean) {
+        val origin: FileConfiguration = getResource("config.yml")?.use { input ->
+            InputStreamReader(input, StandardCharsets.UTF_8).use { reader ->
+                YamlConfiguration.loadConfiguration(reader)
+            }
+        } ?: YamlConfiguration()
+        val configFile = getFileOrNull(this, "config.yml")
+        if (configFile == null) {
+            saveDefaultConfig()
+        } else if (fixConfig) {
+            val config = configFile.loadConfiguration()
+            if (mergeIfAbsent(config, origin)) {
+                config.save(configFile)
+            }
+        }
+        reloadConfig()
     }
 
     /**

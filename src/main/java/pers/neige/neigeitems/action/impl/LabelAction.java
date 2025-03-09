@@ -1,14 +1,13 @@
 package pers.neige.neigeitems.action.impl;
 
-import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import pers.neige.neigeitems.action.Action;
 import pers.neige.neigeitems.action.ActionContext;
 import pers.neige.neigeitems.action.ActionResult;
 import pers.neige.neigeitems.action.ActionType;
+import pers.neige.neigeitems.config.ConfigReader;
 import pers.neige.neigeitems.manager.BaseActionManager;
 
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 public class LabelAction extends Action {
@@ -19,30 +18,11 @@ public class LabelAction extends Action {
 
     public LabelAction(
             @NotNull BaseActionManager manager,
-            @NotNull ConfigurationSection action
-    ) {
-        super(manager);
-        if (action.contains("label")) {
-            label = action.getString("label", "label");
-        } else {
-            label = "label";
-        }
-        actions = manager.compile(action.get("actions"));
-        this.asyncSafe = actions.isAsyncSafe();
-    }
-
-    public LabelAction(
-            @NotNull BaseActionManager manager,
-            @NotNull Map<?, ?> action
+            @NotNull ConfigReader action
     ) {
         super(manager);
         if (action.containsKey("label")) {
-            Object value = action.get("label");
-            if (value instanceof String) {
-                label = (String) value;
-            } else {
-                label = "label";
-            }
+            label = action.getString("label", "label");
         } else {
             label = "label";
         }

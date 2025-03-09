@@ -19,21 +19,21 @@ import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import pers.neige.neigeitems.NeigeItems;
-import pers.neige.neigeitems.action.Action;
-import pers.neige.neigeitems.action.ActionContext;
-import pers.neige.neigeitems.action.ActionResult;
-import pers.neige.neigeitems.action.ResultType;
+import pers.neige.neigeitems.action.*;
 import pers.neige.neigeitems.action.catcher.ChatCatcher;
 import pers.neige.neigeitems.action.catcher.SignCatcher;
 import pers.neige.neigeitems.action.handler.SyncActionHandler;
 import pers.neige.neigeitems.action.impl.*;
 import pers.neige.neigeitems.action.result.Results;
 import pers.neige.neigeitems.action.result.StopResult;
+import pers.neige.neigeitems.config.ConfigReader;
 import pers.neige.neigeitems.hook.mythicmobs.MythicMobsHooker;
 import pers.neige.neigeitems.hook.placeholderapi.PapiHooker;
 import pers.neige.neigeitems.hook.vault.VaultHooker;
 import pers.neige.neigeitems.item.action.ComboInfo;
 import pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.neigeitems.utils.EntityPlayerUtils;
+import pers.neige.neigeitems.text.Text;
+import pers.neige.neigeitems.text.impl.NullText;
 import pers.neige.neigeitems.user.User;
 import pers.neige.neigeitems.utils.*;
 
@@ -55,6 +55,7 @@ import static pers.neige.neigeitems.utils.ListUtils.*;
 @SuppressWarnings("unchecked")
 public abstract class BaseActionManager {
     public final Action NULL_ACTION = new NullAction(this);
+    public final Text NULL_TEXT = new NullText(this);
     @NotNull
     private final Plugin plugin;
     /**
@@ -138,6 +139,8 @@ public abstract class BaseActionManager {
     public Action compile(
             @Nullable Object action
     ) {
+        if (action == null) return NULL_ACTION;
+        if (action instanceof Action) return (Action) action;
         if (action instanceof String) {
             String string = (String) action;
             String[] info = string.split(": ", 2);
@@ -151,70 +154,42 @@ public abstract class BaseActionManager {
             }
         } else if (action instanceof List<?>) {
             return new ListAction(this, (List<?>) action);
-        } else if (action instanceof Map<?, ?>) {
-            Map<?, ?> current = (Map<?, ?>) action;
-            if (current.containsKey("type")) {
-                Object rawType = current.get("type");
-                if (rawType instanceof String) {
-                    String type = ((String) rawType).toLowerCase();
-                    switch (type) {
-                        case "condition": {
-                            return new ConditionAction(this, current);
-                        }
-                        case "condition-weight": {
-                            return new ConditionWeightAction(this, current);
-                        }
-                        case "label": {
-                            return new LabelAction(this, current);
-                        }
-                        case "weight": {
-                            return new WeightAction(this, current);
-                        }
-                        case "while": {
-                            return new WhileAction(this, current);
-                        }
-                    }
-                }
+        }
+        ConfigReader config = ConfigReader.parse(action);
+        if (config == null) return NULL_ACTION;
+        String type = config.getString("type", "").toLowerCase();
+        switch (type) {
+            case "condition": {
+                return new ConditionAction(this, config);
             }
-            if (current.containsKey("condition")) {
-                return new ConditionAction(this, current);
-            } else if (current.containsKey("while")) {
-                return new WhileAction(this, current);
-            } else if (current.containsKey("label")) {
-                return new LabelAction(this, current);
+            case "condition-weight": {
+                return new ConditionWeightAction(this, config);
             }
-        } else if (action instanceof ConfigurationSection) {
-            ConfigurationSection current = (ConfigurationSection) action;
-            if (current.contains("type")) {
-                String type = current.getString("type");
-                if (type != null) {
-                    type = type.toLowerCase();
-                    switch (type) {
-                        case "condition": {
-                            return new ConditionAction(this, current);
-                        }
-                        case "condition-weight": {
-                            return new ConditionWeightAction(this, current);
-                        }
-                        case "label": {
-                            return new LabelAction(this, current);
-                        }
-                        case "weight": {
-                            return new WeightAction(this, current);
-                        }
-                        case "while": {
-                            return new WhileAction(this, current);
-                        }
-                    }
-                }
+            case "double-tree": {
+                return new DoubleTreeAction(this, config);
             }
-            if (current.contains("condition")) {
-                return new ConditionAction(this, current);
-            } else if (current.contains("while")) {
-                return new WhileAction(this, current);
-            } else if (current.contains("label")) {
-                return new LabelAction(this, current);
+            case "int-tree": {
+                return new IntTreeAction(this, config);
             }
+            case "key": {
+                return new KeyAction(this, config);
+            }
+            case "label": {
+                return new LabelAction(this, config);
+            }
+            case "weight": {
+                return new WeightAction(this, config);
+            }
+            case "while": {
+                return new WhileAction(this, config);
+            }
+        }
+        if (config.containsKey("condition")) {
+            return new ConditionAction(this, config);
+        } else if (config.containsKey("while")) {
+            return new WhileAction(this, config);
+        } else if (config.containsKey("label")) {
+            return new LabelAction(this, config);
         }
         return NULL_ACTION;
     }
@@ -333,7 +308,7 @@ public abstract class BaseActionManager {
      * @return 执行结果
      */
     @Nullable
-    protected ConfigurationSection getSectionConfig(@NotNull ActionContext context) {
+    public ConfigurationSection getSectionConfig(@NotNull ActionContext context) {
         return null;
     }
 
@@ -602,6 +577,63 @@ public abstract class BaseActionManager {
     }
 
     /**
+     * 执行动作
+     *
+     * @param action  动作内容
+     * @param context 动作上下文
+     * @return 执行结果
+     */
+    @NotNull
+    public CompletableFuture<ActionResult> runAction(
+            @NotNull KeyAction action,
+            @NotNull ActionContext context
+    ) {
+        String key = action.getKey().get(context);
+        context.getGlobal().put(action.getGlobalId(), key);
+        if (key == null) {
+            return action.getDefaultAction().evalAsyncSafe(this, context);
+        }
+        Action targetAction = action.getActions().getOrDefault(key, action.getDefaultAction());
+        return targetAction.evalAsyncSafe(this, context);
+    }
+
+    /**
+     * 执行动作
+     *
+     * @param action  动作内容
+     * @param context 动作上下文
+     * @return 执行结果
+     */
+    @NotNull
+    public <T extends Comparable<?>> CompletableFuture<ActionResult> runAction(
+            @NotNull TreeAction<T> action,
+            @NotNull ActionContext context
+    ) {
+        T key = action.getKey().get(context);
+        context.getGlobal().put(action.getGlobalId(), key);
+        if (key == null) {
+            return action.getDefaultAction().evalAsyncSafe(this, context);
+        }
+        Map.Entry<T, Action> entry = null;
+        switch (action.getActionType()) {
+            case LOWER:
+                entry = action.getActions().lowerEntry(key);
+                break;
+            case FLOOR:
+                entry = action.getActions().floorEntry(key);
+                break;
+            case HIGHER:
+                entry = action.getActions().higherEntry(key);
+                break;
+            case CEILING:
+                entry = action.getActions().ceilingEntry(key);
+                break;
+        }
+        Action targetAction = entry == null ? action.getDefaultAction() : entry.getValue();
+        return targetAction.evalAsyncSafe(this, context);
+    }
+
+    /**
      * 解析条件
      *
      * @param condition 条件内容
@@ -619,6 +651,28 @@ public abstract class BaseActionManager {
         return parseCondition(
                 condition,
                 conditionScripts.computeIfAbsent(condition, (key) -> HookerManager.INSTANCE.getNashornHooker().compile(engine, key)),
+                context
+        );
+    }
+
+    /**
+     * 解析条件
+     *
+     * @param condition 条件内容
+     * @param context   动作上下文
+     * @return 执行结果
+     */
+    @NotNull
+    public ActionResult parseCondition(
+            @Nullable ScriptWithSource condition,
+            @NotNull ActionContext context
+    ) {
+        if (condition == null) {
+            return Results.SUCCESS;
+        }
+        return parseCondition(
+                condition.getSource(),
+                condition,
                 context
         );
     }

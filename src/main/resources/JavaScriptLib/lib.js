@@ -43,6 +43,7 @@ const UUIDUtils = Packages.pers.neige.neigeitems.utils.UUIDUtils
 const ActionContext = Packages.pers.neige.neigeitems.action.ActionContext
 const AnimationType = Packages.pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.neigeitems.animation.AnimationType
 const EnumHand = Packages.pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.neigeitems.EnumHand
+const NbtItemStack = Packages.pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.NbtItemStack
 const SpawnerBuilder = Packages.pers.neige.neigeitems.libs.bot.inker.bukkit.nbt.neigeitems.spawner.SpawnerBuilder
 const SuccessResult = Packages.pers.neige.neigeitems.action.result.SuccessResult
 const StopResult = Packages.pers.neige.neigeitems.action.result.StopResult
@@ -129,11 +130,9 @@ const papi = function (text) {
  * @return String 解析后文本
  */
 const parse = function (text) {
-    if (typeof cache == "undefined" && typeof sections == "undefined") {
-        return SectionUtils.parseSection(text, player)
-    } else {
-        return SectionUtils.parseSection(text, cache, player, sections)
-    }
+    const c = typeof cache === "undefined" ? null : cache
+    const s = typeof sections === "undefined" ? null : sections
+    return SectionUtils.parseSection(text, c, player, s)
 }
 
 /**
@@ -935,4 +934,22 @@ const mainHandItem = function () {
  */
 const offHandItem = function () {
     return player.getInventory().getItemInOffHand()
+}
+
+/**
+ * 在damage,block,kill相关动作中获取MM怪物ID, 不是MM怪物则返回null
+ */
+const getAttackerMobId = function () {
+    const hooker = HookerManager.INSTANCE.mythicMobsHooker
+    if (hooker == null) return null
+    return hooker.getMythicId(event.getDamager())
+}
+
+/**
+ * 在damage,block,kill相关动作中获取MM怪物ID, 不是MM怪物则返回null
+ */
+const getDefenderMobId = function () {
+    const hooker = HookerManager.INSTANCE.mythicMobsHooker
+    if (hooker == null) return null
+    return hooker.getMythicId(event.getEntity())
 }
